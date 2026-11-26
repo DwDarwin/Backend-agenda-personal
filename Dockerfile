@@ -6,7 +6,7 @@ FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 
 # Copiar archivos del proyecto
-COPY . .
+COPY src .
 
 # Dar permisos al wrapper de Gradle
 RUN chmod +x gradlew
