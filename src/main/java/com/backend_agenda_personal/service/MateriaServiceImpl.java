@@ -5,6 +5,7 @@ import com.backend_agenda_personal.dto.request.MateriaRequestDTO;
 import com.backend_agenda_personal.dto.response.MateriaResponseDTO;
 import com.backend_agenda_personal.model.Materia;
 import com.backend_agenda_personal.model.Usuario;
+import com.backend_agenda_personal.repository.ActividadRepository;
 import com.backend_agenda_personal.repository.MateriaRepository;
 import com.backend_agenda_personal.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +24,14 @@ public class MateriaServiceImpl implements MateriaService {
 
     private final MateriaRepository materiaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final ActividadRepository actividadRepository;
 
     @Override
     public MateriaResponseDTO crear(MateriaRequestDTO request) {
 
         Usuario usuario = obtenerUsuarioAutenticado();
 
-        boolean existe = materiaRepository.existsByNombreAndUsuario_Id(
+        boolean existe = materiaRepository.existsByNombreIgnoreCaseAndUsuario_Id(
                 request.getNombre().trim(),
                 usuario.getId()
         );
@@ -81,14 +83,13 @@ public class MateriaServiceImpl implements MateriaService {
 
         Usuario usuario = obtenerUsuarioAutenticado();
 
-        boolean existe = materiaRepository.existsByNombreAndUsuario_Id(
+        boolean existe = materiaRepository.existsByNombreIgnoreCaseAndUsuario_IdAndIdNot(
                 request.getNombre().trim(),
-                usuario.getId()
+                usuario.getId(),
+                id
         );
 
-        if (existe && !materia.getNombre().equalsIgnoreCase(
-                request.getNombre().trim()
-        )) {
+        if (existe) {
             throw new IllegalArgumentException(
                     "Ya tienes otra materia con ese nombre"
             );
@@ -104,6 +105,20 @@ public class MateriaServiceImpl implements MateriaService {
     public void eliminar(Long id) {
 
         Materia materia = obtenerMateria(id);
+
+        Usuario usuario = obtenerUsuarioAutenticado();
+
+        boolean tieneActividades =
+                actividadRepository.existsByMateria_IdAndUsuario_Id(
+                        materia.getId(),
+                        usuario.getId()
+                );
+
+        if (tieneActividades) {
+            throw new IllegalArgumentException(
+                    "No puedes eliminar esta materia porque tiene actividades asociadas."
+            );
+        }
 
         materiaRepository.delete(materia);
     }

@@ -23,6 +23,17 @@ public interface ActividadRepository extends JpaRepository<Actividad, Long> {
             Long usuarioId
     );
 
+    boolean existsByNombreIgnoreCaseAndUsuario_Id(
+            String nombre,
+            Long usuarioId
+    );
+
+    boolean existsByNombreIgnoreCaseAndUsuario_IdAndIdNot(
+            String nombre,
+            Long usuarioId,
+            Long id
+    );
+
     @Query("""
     SELECT a FROM Actividad a
     WHERE a.usuario.id = :usuarioId
@@ -39,4 +50,6 @@ public interface ActividadRepository extends JpaRepository<Actividad, Long> {
             @Param("estado") EstadoActividad estado,
             @Param("prioridad") PrioridadActividad prioridad
     );
+
+
 }

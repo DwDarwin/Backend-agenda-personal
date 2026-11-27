@@ -33,6 +33,18 @@ public class ActividadServiceImpl implements ActividadService {
 
         Usuario usuario = obtenerUsuarioAutenticado();
 
+
+        boolean existe = actividadRepository.existsByNombreIgnoreCaseAndUsuario_Id(
+                request.getNombre().trim(),
+                usuario.getId()
+        );
+
+        if (existe) {
+            throw new IllegalArgumentException(
+                    "Ya tienes una actividad con ese nombre"
+            );
+        }
+
         Materia materia = obtenerMateria(
                 request.getMateriaId(),
                 usuario.getId()
@@ -131,6 +143,19 @@ public class ActividadServiceImpl implements ActividadService {
         Actividad actividad = obtenerActividad(id);
 
         Usuario usuario = obtenerUsuarioAutenticado();
+
+
+        boolean existe = actividadRepository.existsByNombreIgnoreCaseAndUsuario_IdAndIdNot(
+                request.getNombre().trim(),
+                usuario.getId(),
+                id
+        );
+
+        if (existe) {
+            throw new IllegalArgumentException(
+                    "Ya tienes otra actividad con ese nombre"
+            );
+        }
 
         // Comprobamos que la nueva materia pertenezca al usuario.
         Materia materia = obtenerMateria(
