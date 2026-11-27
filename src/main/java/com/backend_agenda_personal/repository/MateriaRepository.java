@@ -25,4 +25,6 @@ public interface MateriaRepository extends JpaRepository<Materia, Long> {
             Long usuarioId,
             Long id
     );
+
+
 }
