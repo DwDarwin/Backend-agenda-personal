@@ -63,7 +63,7 @@ public class AuthService {
 
         String correo = request.getCorreo().trim().toLowerCase();
 
-        // Spring Security verifica las credenciales
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         correo,
@@ -71,7 +71,7 @@ public class AuthService {
                 )
         );
 
-        // Recuperar el usuario autenticado
+
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
